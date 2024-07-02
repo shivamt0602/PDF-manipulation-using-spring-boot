@@ -29,77 +29,37 @@
 	<properties>
 		<java.version>17</java.version>
 	</properties>
+	
 	<dependencies>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-mongodb</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>
+    <!-- Spring Boot Starter dependencies -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-data-mongodb</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
 
-		<dependency>
-			<groupId>com.itextpdf</groupId>
-			<artifactId>barcodes</artifactId>
-			<version>7.0.0</version>
-		</dependency>
+    <!-- iText 5 dependencies -->
+    <dependency>
+        <groupId>com.itextpdf</groupId>
+        <artifactId>itextpdf</artifactId>
+        <version>5.5.13</version>
+    </dependency>
 
-		<dependency>
-			<groupId>com.itextpdf</groupId>
-			<artifactId>font-asian</artifactId>
-			<version>7.0.0</version>
-		</dependency>
+    <!-- Other dependencies (if needed) -->
+    
+    <!-- Spring Boot Starter Test -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-test</artifactId>
+        <scope>test</scope>
+    </dependency>
+</dependencies>
 
-		<dependency>
-			<groupId>com.itextpdf</groupId>
-			<artifactId>forms</artifactId>
-			<version>7.0.0</version>
-		</dependency>
 
-		<dependency>
-			<groupId>com.itextpdf</groupId>
-			<artifactId>hyph</artifactId>
-			<version>7.0.0</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.itextpdf</groupId>
-			<artifactId>io</artifactId>
-			<version>7.0.0</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.itextpdf</groupId>
-			<artifactId>kernel</artifactId>
-			<version>7.0.0</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.itextpdf</groupId>
-			<artifactId>layout</artifactId>
-			<version>7.0.0</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.itextpdf</groupId>
-			<artifactId>pdfa</artifactId>
-			<version>7.0.0</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.itextpdf</groupId>
-			<artifactId>sign</artifactId>
-			<version>7.0.0</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
-
+	
 	<build>
 		<plugins>
 			<plugin>

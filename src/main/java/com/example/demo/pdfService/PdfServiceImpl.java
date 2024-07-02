@@ -1,34 +1,44 @@
 package com.example.demo.pdfService;
-import com.itextpdf.kernel.pdf.PdfDocument;
-import com.itextpdf.kernel.pdf.PdfWriter;
-import com.itextpdf.layout.Document;
-import com.itextpdf.layout.element.Paragraph;
-import org.springframework.stereotype.Service;
-import java.io.FileNotFoundException;
-import com.itextpdf.io.image.ImageData;
-import com.itextpdf.io.image.ImageDataFactory;
-import com.itextpdf.layout.element.Image;
-import java.io.IOException;
 
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfWriter;
+
+import org.springframework.stereotype.Service;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 @Service
 public class PdfServiceImpl {
-	
-	 public void addTextToPdf(String dest, String text) throws FileNotFoundException {
-	        PdfWriter writer = new PdfWriter(dest);
-	        PdfDocument pdf = new PdfDocument(writer);
-	        Document document = new Document(pdf);
-	        document.add(new Paragraph(text));
-	        document.close();
-	    }
-	 
-	 public void addImageToPdf(String dest, String imagePath) throws IOException {
-	        PdfWriter writer = new PdfWriter(dest);
-	        PdfDocument pdf = new PdfDocument(writer);
-	        Document document = new Document(pdf);
-	        ImageData data = ImageDataFactory.create(imagePath);
-	        Image img = new Image(data);
-	        document.add(img);
-	        document.close();
-	    }
+
+    public void addTextToPdf(String filePath, String text) throws IOException, DocumentException {
+        Document document = new Document();
+        try {
+            PdfWriter.getInstance(document, new FileOutputStream(filePath));
+            document.open();
+            Paragraph paragraph = new Paragraph(text);
+            document.add(paragraph);
+        } finally {
+            if (document != null) {
+                document.close();
+            }
+        }
+    }
+
+    public void addImageToPdf(String filePath, String imagePath) throws IOException, DocumentException {
+        Document document = new Document();
+        try {
+            PdfWriter.getInstance(document, new FileOutputStream(filePath));
+            document.open();
+            Image image = Image.getInstance(imagePath);
+            document.add(image);
+        } finally {
+            if (document != null) {
+                document.close();
+            }
+        }
+    }
 }
