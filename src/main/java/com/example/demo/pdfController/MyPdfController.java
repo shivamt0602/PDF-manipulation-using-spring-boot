@@ -17,7 +17,9 @@ public class MyPdfController {
     @PostMapping("/addText")
     public String addText(@RequestParam String filepath, @RequestParam String text) {
         try {
-            pdfServiceImpl.addTextToPdf(filepath, text);
+            // Provide the complete output file path where you want to save the modified PDF
+            String outputFilePath = "/home/shivamptirmare/Desktop/MyPdfPOutput.pdf";
+            pdfServiceImpl.addTextToPdf(filepath, outputFilePath, text);
             return "Text added successfully";
         } catch (FileNotFoundException e) {
             return "File not found: " + e.getMessage();
@@ -31,7 +33,9 @@ public class MyPdfController {
     @PostMapping("/addImage")
     public String addImage(@RequestParam String filePath, @RequestParam String imagePath) {
         try {
-            pdfServiceImpl.addImageToPdf(filePath, imagePath);
+            // Provide the complete output file path where you want to save the modified PDF
+            String outputFilePath = "/home/shivamptirmare/Desktop/MyPdfPOutput.pdf";
+            pdfServiceImpl.addImageToPdf(filePath, outputFilePath, imagePath);
             return "Image added successfully";
         } catch (IOException e) {
             return "Error adding image: " + e.getMessage();
