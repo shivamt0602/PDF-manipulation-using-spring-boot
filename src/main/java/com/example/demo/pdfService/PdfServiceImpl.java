@@ -1,35 +1,27 @@
 package com.example.demo.pdfService;
+
 import com.itextpdf.text.DocumentException;
-//import com.itextpdf.text.pdf.PdfCopy;
-//import com.itextpdf.text.pdf.PdfImportedPage;
-import com.itextpdf.text.pdf.PdfReader;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.pdf.*;
+
 import org.springframework.stereotype.Service;
+
 import java.io.FileOutputStream;
 import java.io.IOException;
-import com.itextpdf.text.Image;
-import com.itextpdf.text.pdf.BaseFont;
-import com.itextpdf.text.pdf.PdfContentByte;
-//import com.itextpdf.text.pdf.PdfCopy;
-import com.itextpdf.text.pdf.PdfImportedPage;
-//import com.itextpdf.text.pdf.PdfDocument;
-import com.itextpdf.text.pdf.PdfStamper;
-//import com.itextpdf.text.pdf.RandomAccessFileOrArray;
-//import com.itextpdf.text.pdf.PdfWriter;
-
 
 @Service
 public class PdfServiceImpl {
 
     public void addTextToPdf(String inputFilePath, String outputFilePath, String text) throws IOException, DocumentException {
         PdfReader reader = new PdfReader(inputFilePath);
-        FileOutputStream fos = new FileOutputStream(outputFilePath); // Creates a new output file
+        FileOutputStream fos = new FileOutputStream(outputFilePath);
         PdfStamper stamper = new PdfStamper(reader, fos);
         PdfContentByte cb = stamper.getOverContent(2);
 
         BaseFont bf = BaseFont.createFont(BaseFont.HELVETICA, BaseFont.WINANSI, BaseFont.EMBEDDED);
         cb.beginText();
         cb.setFontAndSize(bf, 12);
-        cb.showTextAligned(PdfContentByte.ALIGN_LEFT, text, 100, 100,0);
+        cb.showTextAligned(PdfContentByte.ALIGN_LEFT, text, 50, 50, 0);
         cb.endText();
 
         stamper.close();
@@ -38,18 +30,17 @@ public class PdfServiceImpl {
 
     public void addImageToPdf(String inputFilePath, String outputFilePath, String imagePath) throws IOException, DocumentException {
         PdfReader reader = new PdfReader(inputFilePath);
-        FileOutputStream fos = new FileOutputStream(outputFilePath); // Creates a new output file
+        FileOutputStream fos = new FileOutputStream(outputFilePath);
         PdfStamper stamper = new PdfStamper(reader, fos);
-        PdfContentByte cb = stamper.getOverContent(1);
-
+        PdfContentByte cb = stamper.getOverContent(2);
         Image image = Image.getInstance(imagePath);
-        image.setAbsolutePosition(200, 200); // Adjust as needed
+        image.setAbsolutePosition(200, 200);
         cb.addImage(image);
+
         stamper.close();
         reader.close();
     }
-    
-    
+
     public void mergePdfs(String filePath1, String filePath2, String outputFilePath) throws IOException, DocumentException {
         PdfReader reader1 = null;
         PdfReader reader2 = null;

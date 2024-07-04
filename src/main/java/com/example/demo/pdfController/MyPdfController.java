@@ -1,5 +1,4 @@
 package com.example.demo.pdfController;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import com.example.demo.pdfService.PdfServiceImpl;
@@ -16,11 +15,11 @@ public class MyPdfController {
     private PdfServiceImpl pdfServiceImpl;
 
     @PostMapping("/addText")
-    public String addText(@RequestParam String filepath, @RequestParam String text) {
+    public String addText(@RequestParam String filePath, @RequestParam String text) {
         try {
             // Provide the complete output file path where you want to save the modified PDF
-            String outputFilePath = "/home/shivamptirmare/Desktop/MyPdfOutput.pdf";
-            pdfServiceImpl.addTextToPdf(filepath, outputFilePath, text);
+            String outputFilePath = "/home/shivamptirmare/Desktop/textop1.pdf";
+            pdfServiceImpl.addTextToPdf(filePath, outputFilePath, text);
             return "Text added successfully";
         } catch (FileNotFoundException e) {
             return "File not found: " + e.getMessage();
@@ -35,7 +34,7 @@ public class MyPdfController {
     public String addImage(@RequestParam String filePath, @RequestParam String imagePath) {
         try {
             // Provide the complete output file path where you want to save the modified PDF
-            String outputFilePath = "/home/shivamptirmare/Desktop/ImageOutput1.pdf";
+            String outputFilePath = "/home/shivamptirmare/Desktop/imageop1.pdf";
             pdfServiceImpl.addImageToPdf(filePath, outputFilePath, imagePath);
             return "Image added successfully";
         } catch (IOException e) {
@@ -44,17 +43,16 @@ public class MyPdfController {
             return "Error: " + e.getMessage();
         }
     }
-    
+
     @PostMapping("/merge")
     public String mergePdfs(@RequestParam String filePath1, @RequestParam String filePath2) {
         try {
             // Provide the complete output file path where you want to save the merged PDF
-            String outputFilePath = "/home/shivamptirmare/Desktop/MergedPdfOutput.pdf";
+            String outputFilePath = "/home/shivamptirmare/Desktop/mergedop1.pdf";
             pdfServiceImpl.mergePdfs(filePath1, filePath2, outputFilePath);
             return "PDFs merged successfully";
         } catch (IOException | DocumentException e) {
             return "Error merging PDFs: " + e.getMessage();
         }
     }
-
 }
