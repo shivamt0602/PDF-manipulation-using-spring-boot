@@ -1,15 +1,21 @@
 package com.example.demo.pdfService;
-
 import com.itextpdf.text.DocumentException;
+//import com.itextpdf.text.pdf.PdfCopy;
+//import com.itextpdf.text.pdf.PdfImportedPage;
+import com.itextpdf.text.pdf.PdfReader;
+import org.springframework.stereotype.Service;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfContentByte;
-import com.itextpdf.text.pdf.PdfReader;
+//import com.itextpdf.text.pdf.PdfCopy;
+import com.itextpdf.text.pdf.PdfImportedPage;
+//import com.itextpdf.text.pdf.PdfDocument;
 import com.itextpdf.text.pdf.PdfStamper;
-import org.springframework.stereotype.Service;
+//import com.itextpdf.text.pdf.RandomAccessFileOrArray;
+//import com.itextpdf.text.pdf.PdfWriter;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
 
 @Service
 public class PdfServiceImpl {
@@ -18,12 +24,12 @@ public class PdfServiceImpl {
         PdfReader reader = new PdfReader(inputFilePath);
         FileOutputStream fos = new FileOutputStream(outputFilePath); // Creates a new output file
         PdfStamper stamper = new PdfStamper(reader, fos);
-        PdfContentByte cb = stamper.getOverContent(1);
+        PdfContentByte cb = stamper.getOverContent(2);
 
         BaseFont bf = BaseFont.createFont(BaseFont.HELVETICA, BaseFont.WINANSI, BaseFont.EMBEDDED);
         cb.beginText();
         cb.setFontAndSize(bf, 12);
-        cb.showTextAligned(PdfContentByte.ALIGN_LEFT, text, 36, 72, 0);
+        cb.showTextAligned(PdfContentByte.ALIGN_LEFT, text, 100, 100,0);
         cb.endText();
 
         stamper.close();
@@ -37,10 +43,47 @@ public class PdfServiceImpl {
         PdfContentByte cb = stamper.getOverContent(1);
 
         Image image = Image.getInstance(imagePath);
-        image.setAbsolutePosition(100, 500); // Adjust as needed
+        image.setAbsolutePosition(200, 200); // Adjust as needed
         cb.addImage(image);
-
         stamper.close();
         reader.close();
+    }
+    
+    
+    public void mergePdfs(String filePath1, String filePath2, String outputFilePath) throws IOException, DocumentException {
+        PdfReader reader1 = null;
+        PdfReader reader2 = null;
+        PdfStamper stamper = null;
+
+        try {
+            reader1 = new PdfReader(filePath1);
+            reader2 = new PdfReader(filePath2);
+            stamper = new PdfStamper(reader1, new FileOutputStream(outputFilePath));
+
+            int totalPages1 = reader1.getNumberOfPages();
+            int totalPages2 = reader2.getNumberOfPages();
+
+            for (int i = 1; i <= totalPages1; i++) {
+                PdfImportedPage page = stamper.getImportedPage(reader1, i);
+                stamper.getUnderContent(i).addTemplate(page, 0, 0);
+            }
+
+            for (int i = 1; i <= totalPages2; i++) {
+                PdfImportedPage page = stamper.getImportedPage(reader2, i);
+                stamper.insertPage(totalPages1 + i, reader2.getPageSize(i));
+                stamper.getUnderContent(totalPages1 + i).addTemplate(page, 0, 0);
+            }
+
+        } finally {
+            if (stamper != null) {
+                stamper.close();
+            }
+            if (reader1 != null) {
+                reader1.close();
+            }
+            if (reader2 != null) {
+                reader2.close();
+            }
+        }
     }
 }
