@@ -1,7 +1,9 @@
 package com.example.demo.pdfController;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import com.example.demo.pdfService.PdfServiceImpl;
+import com.example.demo.pdfService.PdfSigningService;
 import com.itextpdf.text.DocumentException;
 
 import java.io.FileNotFoundException;
@@ -13,6 +15,9 @@ public class MyPdfController {
 
     @Autowired
     private PdfServiceImpl pdfServiceImpl;
+
+    @Autowired
+    private PdfSigningService pdfSigningService;
 
     @PostMapping("/addText")
     public String addText(@RequestParam String filePath, @RequestParam String text) {
@@ -53,6 +58,16 @@ public class MyPdfController {
             return "PDFs merged successfully";
         } catch (IOException | DocumentException e) {
             return "Error merging PDFs: " + e.getMessage();
+        }
+    }
+
+    @PostMapping("/sign")
+    public String signPdf(@RequestParam String src, @RequestParam String dest, @RequestParam String keystorePath, @RequestParam String keystorePassword, @RequestParam String alias) {
+        try {
+            pdfSigningService.signPdf(src, dest, keystorePath, keystorePassword, alias);
+            return "PDF signed successfully";
+        } catch (Exception e) {
+            return "Error signing PDF: " + e.getMessage();
         }
     }
 }

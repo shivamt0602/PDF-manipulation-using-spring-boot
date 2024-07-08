@@ -1,13 +1,26 @@
 package com.example.demo.pdfService;
-
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Image;
-import com.itextpdf.text.pdf.*;
-
+import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfImportedPage;
+import com.itextpdf.text.pdf.PdfReader;
+import com.itextpdf.text.pdf.PdfSignatureAppearance;
+import com.itextpdf.text.pdf.PdfStamper;
+import com.itextpdf.text.pdf.security.BouncyCastleDigest;
+import com.itextpdf.text.pdf.security.ExternalDigest;
+import com.itextpdf.text.pdf.security.ExternalSignature;
+import com.itextpdf.text.pdf.security.MakeSignature;
+import com.itextpdf.text.pdf.security.PrivateKeySignature;
 import org.springframework.stereotype.Service;
-
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.security.KeyStore;
+import java.security.PrivateKey;
+import java.security.cert.Certificate;
 
 @Service
 public class PdfServiceImpl {
@@ -77,4 +90,34 @@ public class PdfServiceImpl {
             }
         }
     }
+
+    public void signPdf(String src, String dest, String keystorePath, String keystorePassword, String alias) throws GeneralSecurityException, IOException, DocumentException {
+        KeyStore ks = KeyStore.getInstance("PKCS12");
+        ks.load(new FileInputStream(keystorePath), keystorePassword.toCharArray());
+
+        PrivateKey pk = (PrivateKey) ks.getKey(alias, keystorePassword.toCharArray());
+        Certificate[] chain = ks.getCertificateChain(alias);
+
+        PdfReader reader = new PdfReader(src);
+        FileOutputStream os = new FileOutputStream(dest);
+        PdfStamper stamper = PdfStamper.createSignature(reader, os, '\0');
+
+        PdfSignatureAppearance appearance = stamper.getSignatureAppearance();
+        appearance.setReason("Example Reason");
+        appearance.setLocation("Example Location");
+
+        // Use a different and unique signature field name
+        String fieldName = "myUniqueSignature123";
+        appearance.setVisibleSignature(new Rectangle(50, 100, 220, 140), 1, fieldName);
+
+        ExternalDigest digest = new BouncyCastleDigest();
+        ExternalSignature signature = new PrivateKeySignature(pk, "SHA-256", "BC");
+
+        MakeSignature.signDetached(appearance, digest, signature, chain, null, null, null, 0, MakeSignature.CryptoStandard.CMS);
+
+        stamper.close();
+        reader.close();
+    }
+
+
 }
