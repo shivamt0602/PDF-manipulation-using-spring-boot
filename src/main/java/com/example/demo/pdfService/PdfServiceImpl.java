@@ -21,6 +21,8 @@ import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.cert.Certificate;
+import com.itextpdf.text.pdf.*;
+
 
 @Service
 public class PdfServiceImpl {
@@ -91,33 +93,50 @@ public class PdfServiceImpl {
         }
     }
 
-    public void signPdf(String src, String dest, String keystorePath, String keystorePassword, String alias) throws GeneralSecurityException, IOException, DocumentException {
+    public  void signPdf(String src, String dest, String keystorePath, String keystorePassword, String alias) throws IOException, DocumentException, GeneralSecurityException {
+        // Load the keystore
+    	System.out.println(src);
         KeyStore ks = KeyStore.getInstance("PKCS12");
         ks.load(new FileInputStream(keystorePath), keystorePassword.toCharArray());
 
+        // Get the private key and certificate chain
         PrivateKey pk = (PrivateKey) ks.getKey(alias, keystorePassword.toCharArray());
         Certificate[] chain = ks.getCertificateChain(alias);
 
+        // Read the existing PDF
         PdfReader reader = new PdfReader(src);
         FileOutputStream os = new FileOutputStream(dest);
         PdfStamper stamper = PdfStamper.createSignature(reader, os, '\0');
 
+        // Create appearance
         PdfSignatureAppearance appearance = stamper.getSignatureAppearance();
         appearance.setReason("Example Reason");
         appearance.setLocation("Example Location");
 
-        // Use a different and unique signature field name
-        String fieldName = "myUniqueSignature123";
-        appearance.setVisibleSignature(new Rectangle(50, 100, 220, 140), 1, fieldName);
+        // Create a new blank signature field on page 1
+        Rectangle rect = new Rectangle(50, 100, 220, 140);
+        PdfFormField sigField = PdfFormField.createSignature(stamper.getWriter());
+        sigField.setWidget(rect, PdfAnnotation.HIGHLIGHT_INVERT);
+        sigField.setFlags(PdfAnnotation.FLAGS_PRINT);
+        sigField.put(PdfName.DA, new PdfString("/Helv 0 Tf 0 g"));
+        sigField.setFieldName("signature");
+        sigField.setPage();
+        stamper.addAnnotation(sigField, 1);
 
+        // Set the visible signature on the new field
+        appearance.setVisibleSignature(rect, 1, "signature");
+
+        // Create digest
         ExternalDigest digest = new BouncyCastleDigest();
+
+        // Create signature
         ExternalSignature signature = new PrivateKeySignature(pk, "SHA-256", "BC");
 
+        // Sign the document
         MakeSignature.signDetached(appearance, digest, signature, chain, null, null, null, 0, MakeSignature.CryptoStandard.CMS);
 
+        // Close resources
         stamper.close();
         reader.close();
     }
-
-
 }

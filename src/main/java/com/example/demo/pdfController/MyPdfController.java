@@ -2,22 +2,19 @@ package com.example.demo.pdfController;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import com.example.demo.dto.SignPdfRequest;
 import com.example.demo.pdfService.PdfServiceImpl;
-import com.example.demo.pdfService.PdfSigningService;
 import com.itextpdf.text.DocumentException;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("/pdf")
 public class MyPdfController {
 
     @Autowired
     private PdfServiceImpl pdfServiceImpl;
-
-    @Autowired
-    private PdfSigningService pdfSigningService;
 
     @PostMapping("/addText")
     public String addText(@RequestParam String filePath, @RequestParam String text) {
@@ -62,9 +59,15 @@ public class MyPdfController {
     }
 
     @PostMapping("/sign")
-    public String signPdf(@RequestParam String src, @RequestParam String dest, @RequestParam String keystorePath, @RequestParam String keystorePassword, @RequestParam String alias) {
+    public String signPdf(@RequestBody SignPdfRequest request) {
         try {
-            pdfSigningService.signPdf(src, dest, keystorePath, keystorePassword, alias);
+            System.out.println(request.getSrc());
+            System.out.println(request.getDest());
+            System.out.println(request.getKeystorePath());
+            System.out.println(request.getKeystorePassword());
+            System.out.println(request.getAlias());
+            
+            pdfServiceImpl.signPdf(request.getSrc(), request.getDest(), request.getKeystorePath(), request.getKeystorePassword(), request.getAlias());
             return "PDF signed successfully";
         } catch (Exception e) {
             return "Error signing PDF: " + e.getMessage();
